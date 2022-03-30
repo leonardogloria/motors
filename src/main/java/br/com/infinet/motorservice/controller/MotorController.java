@@ -3,6 +3,8 @@ package br.com.infinet.motorservice.controller;
 import br.com.infinet.motorservice.model.Motor;
 import br.com.infinet.motorservice.service.MotorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +19,10 @@ public class MotorController {
     MotorService motorService;
     @GetMapping
     public ResponseEntity<? > getAll(){
+        HttpHeaders headers = new HttpHeaders();
+        System.out.println("Ola");
+        headers.add("version", "1.3");
         List<Motor> all = motorService.getAll();
-        return ResponseEntity.ok().body(all);
+        return new ResponseEntity<>(all,headers, HttpStatus.OK);
     }
 }
