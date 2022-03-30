@@ -20,8 +20,7 @@ public class MotorController {
     @GetMapping
     public ResponseEntity<? > getAll(){
         HttpHeaders headers = new HttpHeaders();
-        System.out.println("Ola");
-        headers.add("version", "1.3");
+        headers.add("version", "1.3.1");
         List<Motor> all = motorService.getAll();
         return new ResponseEntity<>(all,headers, HttpStatus.OK);
     }
