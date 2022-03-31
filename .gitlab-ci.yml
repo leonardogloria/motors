@@ -13,6 +13,7 @@ stages:
   - build
   - test
   - copy-s3
+  - deploy
 
 build-job:
   stage: build
@@ -41,3 +42,14 @@ copy-to-s3-job:
     - echo "Copiando file para o S3"
     - sh ./configure_aws.sh $ACCESS_KEY $SECRET_KEY
     - aws s3 cp target/$JAR_NAME s3://labs-test-file
+deploy-job:
+  stage: deploy
+  dependencies:
+    - copy-to-s3-job
+  script:
+    - echo "Iniciante Deploy"
+    - aws elasticbeanstalk create-application-version --application-name motors --version-label ${CI_COMMIT_SHA} source-bundle "S3Bucket=labs-test-file,S3Key=motor-service-0.0.1-SNAPSHOT.jar"
+    - aws elasticbeanstalk update-environment --application-name motors --environment-name Motors-prod --version-label ${CI_COMMIT_SHA}
+  artifacts:
+    paths:
+      - "/target/*.jar"
