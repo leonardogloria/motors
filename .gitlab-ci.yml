@@ -14,6 +14,7 @@ stages:
   - test
   - copy-s3
   - deploy
+  - notificacao
 
 build-job:
   stage: build
@@ -53,3 +54,15 @@ deploy-job:
   artifacts:
     paths:
       - "/target/*.jar"
+
+sucesso-notification:
+  stage: notificacao
+  when: on_success
+  script:
+    - echo "Sucesso"
+
+falha-notification:
+  stage: notificacao
+  when: on_failure
+  script:
+    - echo "Erro"
