@@ -1,8 +1,8 @@
 stages:
-  - hello
+  - build
 
-hello-job:
-  stage: hello
+build-job:
+  stage: build
   script:
-    - echo "Hello World"
-
+    - echo "Compilando codigo..."
+    - "mvn clean compile"
