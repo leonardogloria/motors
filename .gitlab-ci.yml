@@ -1,12 +1,27 @@
+variables:
+  MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=./.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+  ACCESS_KEY: $ACCESS_KEY
+  SECRET_KEY: $SECRET_KEY
+  JAR_NAME: "motor-service-0.0.1-SNAPSHOT.jar"
+cache:
+  paths:
+    - .m2/repository
+  key: maven
+
 stages:
   - build
   - test
+  - copy-s3
 
 build-job:
   stage: build
   script:
     - echo "Compilando codigo..."
-    - "mvn clean compile"
+    - "mvn clean compile $MAVEN_CLI_OPTS"
+  artifacts:
+    paths:
+      - target/
 
 test-junit-job:
   stage: test
@@ -14,4 +29,15 @@ test-junit-job:
     - build-job
   script:
     - echo "Testando Codigo"
-    - "mvn package"
+    - "mvn package $MAVEN_CLI_OPTS"
+  artifacts:
+    paths:
+      - target/
+copy-to-s3-job:
+  stage: copy-s3
+  dependencies:
+    - test-junit-job
+  script:
+    - echo "Copiando file para o S3"
+    - sh ./configure_aws.sh $ACCESS_KEY $SECRET_KEY
+    - aws s3 cp target/$JAR_NAME s3://labs-test-file
